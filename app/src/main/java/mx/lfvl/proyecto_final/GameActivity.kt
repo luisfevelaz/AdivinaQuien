@@ -49,7 +49,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         recView.setHasFixedSize(true)
-        recView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         recView.adapter = adaptador;
     }
