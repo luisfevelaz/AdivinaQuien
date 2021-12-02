@@ -2,7 +2,8 @@ package mx.lfvl.proyecto_final
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class GameActivity : AppCompatActivity() {
     private lateinit var recView: RecyclerView
+    private lateinit var imgJugador: ImageView
+    private lateinit var pregunta: String
+    private lateinit var preguntaPersonaje: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -17,6 +21,28 @@ class GameActivity : AppCompatActivity() {
         val personaje = intent.getSerializableExtra("personaje") as Personaje
 
         recView = findViewById(R.id.recView)
+        imgJugador = findViewById(R.id.imgJugador)
+        imgJugador.setImageResource(personaje.imagen)
+
+        val btnSend: Button = findViewById(R.id.btnSend)
+        val btnSi: Button = findViewById(R.id.btnSi)
+        val btnNo: Button = findViewById(R.id.btnNo)
+
+        val spPreguntas: Spinner = findViewById(R.id.spPreg)
+        val spPersonaje: Spinner = findViewById(R.id.spPersonaje)
+
+        val adaptadorPreg = ArrayAdapter.createFromResource(this,R.array.preguntas_array,android.R.layout.simple_spinner_item)
+        val adaptadorPersonaje = ArrayAdapter.createFromResource(this,R.array.nombres_array,android.R.layout.simple_spinner_item)
+
+        adaptadorPreg.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spPreguntas.adapter = adaptadorPreg
+
+        adaptadorPersonaje.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spPersonaje.adapter = adaptadorPersonaje
+
+        btnSi.isEnabled = false
+        btnNo.isEnabled = false
+
 
         val datos = arrayOf(
             Personaje(1,"Memo", R.drawable.c1),
@@ -44,6 +70,54 @@ class GameActivity : AppCompatActivity() {
             Personaje(23,"Carlos", R.drawable.c23),
             Personaje(24,"Jose", R.drawable.c24),
         )
+
+        btnSend.setOnClickListener {
+            btnNo.isEnabled = true
+            btnSi.isEnabled = true
+            btnSend.isEnabled = false
+        }
+
+        btnNo.setOnClickListener {
+            btnNo.isEnabled = false
+            btnSi.isEnabled = false
+            btnSend.isEnabled = true
+        }
+
+        btnSi.setOnClickListener {
+            btnNo.isEnabled = false
+            btnSi.isEnabled = false
+            btnSend.isEnabled = true
+        }
+
+        spPersonaje.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>) {
+
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                //asigna valores a la variable preguntaPersonaje
+            }
+        }
+
+        spPreguntas.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>) {
+
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                //asigna valores a la variable pregunta
+            }
+        }
 
         //val adaptador = CartasItemsSeleccion(datos)
         val adaptador = CartasItemsSeleccion(datos){
