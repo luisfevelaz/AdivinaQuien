@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">proyecto_final</string>
+    <string-array name="nombres_array">
+        <item>Bryan</item>
+        <item>Sofia</item>
+    </string-array>
+    <string-array name="preguntas_array">
+        <item>¿Tu personaje es hombre?</item>
+        <item>¿Tu personaje es mujer?</item>
+    </string-array>
 </resources>
