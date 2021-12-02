@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "634130797449",
+    "project_id": "fir-adivinaquien",
+    "storage_bucket": "fir-adivinaquien.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634130797449:android:3aeb5689a3596aac6bc758",
+        "android_client_info": {
+          "package_name": "mx.lfvl.proyecto_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "634130797449-g31evpc6u36go1rs7eeqv7mqfm8tssjv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mx.lfvl.proyecto_final",
+            "certificate_hash": "b12ca15cdac5d6fc8bb96c8ca36666c851e15be4"
+          }
+        },
+        {
+          "client_id": "634130797449-9t5sqoggphlnni9iidull5b7mn06j0dr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzQU2AwELjlTkT7Nh5_wqLU2yda9oI4F8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "634130797449-9t5sqoggphlnni9iidull5b7mn06j0dr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

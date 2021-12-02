@@ -1,23 +1,24 @@
 package mx.lfvl.proyecto_final
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import kotlinx.android.synthetic.main.activity_usuario_sesion.*
-import kotlin.random.Random
+import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-class UsuarioSesion : AppCompatActivity() {
+class GameActivity : AppCompatActivity() {
+    private lateinit var recView: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_usuario_sesion)
-        val personajeImagen: ImageView = findViewById(R.id.personaje);
-        val btnOnline: Button = findViewById(R.id.btnOnline);
-        val btnIndividual: Button = findViewById(R.id.btnIndividual);
+        setContentView(R.layout.activity_game)
 
+        val personaje = intent.getSerializableExtra("personaje") as Personaje
 
-        val items = listOf<Personaje>(
+        recView = findViewById(R.id.recView)
+
+        val datos = arrayOf(
             Personaje(1,"Memo", R.drawable.c1),
             Personaje(2,"Laura", R.drawable.c2),
             Personaje(3,"Bryan", R.drawable.c3),
@@ -42,27 +43,17 @@ class UsuarioSesion : AppCompatActivity() {
             Personaje(22,"Manuel", R.drawable.c22),
             Personaje(23,"Carlos", R.drawable.c23),
             Personaje(24,"Jose", R.drawable.c24),
-        );
+        )
 
-        val random = Random(System.nanoTime()).nextInt(24 - 1 + 1) + 1;
-        personajeImagen.setImageResource(items[random-1].imagen); // se obtienen aleatoriamente el personaje
-
-        val personaje = items[random-1]; // se almacena el personaje en una variable para enviarselo a una de las dos opciones de juego
-
-        btnOnline.setOnClickListener {
-            val intent = Intent(this,GameActivity::class.java)
-            intent.putExtra("personaje",personaje)
-            startActivity(intent)
-
+        //val adaptador = CartasItemsSeleccion(datos)
+        val adaptador = CartasItemsSeleccion(datos){
+            Toast.makeText(this,"Pulsando a: ${it.nombre} ",Toast.LENGTH_SHORT).show()
         }
 
-        btnIndividual.setOnClickListener {
-            val intent = Intent(this,GameActivity::class.java)
-            intent.putExtra("personaje",personaje)
-            startActivity(intent)
-        }
+        recView.setHasFixedSize(true)
+        recView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
 
 
-
+        recView.adapter = adaptador;
     }
 }

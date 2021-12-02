@@ -5,16 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_personaje.view.*
 
-class CartasItemsSeleccion(private val contexto: Context, private val items: List<Personaje>):ArrayAdapter<Personaje>(contexto,0,items) {
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // definimos la variable layout que nos va a ayudar a pasar los items de variables a presentarlas en el layout de item_concepto
-        val layout = LayoutInflater.from(contexto).inflate(R.layout.item_personaje,parent,false)
-        // concepto toma al item en la posición en turno para pasarle al layout sus propiedades y reflejarlas en pantalla
-        val concepto = items[position]
-        layout.nombre.text = concepto.nombre
-        layout.imagen.setImageResource(concepto.imagen)
-        return layout
+class CartasItemsSeleccion(private val datos: Array<Personaje>,
+                            private val clickListener : (Personaje) -> Unit):
+    RecyclerView.Adapter<CartasItemsSeleccion.PersonajesViewHolder>(){
+        class PersonajesViewHolder(val item: View): RecyclerView.ViewHolder(item){
+            val img = item.findViewById(R.id.imagen) as ImageView
+            fun bindPersonaje(personaje: Personaje){
+                img.setImageResource(personaje.imagen);
+            }
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonajesViewHolder {
+        val item = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_personaje, parent, false) as LinearLayout
+        return PersonajesViewHolder(item)
     }
+
+    override fun onBindViewHolder(holder: PersonajesViewHolder, position: Int) {
+        val personaje = datos[position]
+
+        holder.bindPersonaje(personaje)
+        holder.item.setOnClickListener {
+            var personaje = datos[position]
+            personaje.imagen = R.drawable.atras1
+            holder.bindPersonaje(personaje)
+        }
+    }
+
+    override fun getItemCount() = datos.size
+
 }
