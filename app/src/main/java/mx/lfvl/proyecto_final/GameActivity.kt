@@ -3,6 +3,8 @@ package mx.lfvl.proyecto_final
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -49,7 +51,8 @@ class GameActivity : AppCompatActivity() {
         }
 
         recView.setHasFixedSize(true)
-        recView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
+
 
         recView.adapter = adaptador;
     }
