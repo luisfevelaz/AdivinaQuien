@@ -10,8 +10,6 @@ import android.widget.EditText
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.lang.Exception
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @IgnoreExtraProperties
 data class Usuario(val username: String? = null, val password: String? = null, val online: Boolean? = false) {
@@ -30,11 +28,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txtPassword: EditText
     private lateinit var newUser: CheckBox
     private lateinit var db: DatabaseReference
-    private lateinit var userInSession: Any
+    private var userInSession: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         btnInicio = findViewById(R.id.inicio)
         txtUser = findViewById(R.id.txtUser)
         txtPassword = findViewById(R.id.txtPassword)
@@ -46,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             var username = txtUser.text.toString()
             if(newUser.isChecked && txtUser.text.toString().isNotEmpty() && txtPassword.text.toString().isNotEmpty()) {
 
+                //Registramos un usuario si no existe ya en la BD
                 db.child("Usuarios").get().addOnSuccessListener {
                     var existe = false
                     for(element: DataSnapshot in it.getChildren()){
@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                     Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
                 }
             }else if(txtUser.text.toString().isNotEmpty() && txtPassword.text.toString().isNotEmpty()){
+                //Iniciamos la sesión de un usuario dado de alta en la BD
                 db.child("Usuarios").get().addOnSuccessListener {
                     var existe = false
                     var userKey = ""
@@ -90,17 +91,46 @@ class MainActivity : AppCompatActivity() {
                         userInSession = username
 
                         val intent = Intent(this,UsuarioSesion::class.java)
+                        intent.putExtra("username", username)
                         startActivity(intent)
                     }
                 }.addOnFailureListener{
                     Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
                 }
 
-                /*val intent = Intent(this,UsuarioSesion::class.java)
-                startActivity(intent)*/
             }
         }
+    }
 
+    override fun onDestroy() {
+        if(userInSession != ""){
+            db.child("Usuarios").get().addOnSuccessListener {
+                var existe = false
+                var userKey = ""
+                var password = ""
+                for(element: DataSnapshot in it.getChildren()){
+                    var usernameReg = element.value as HashMap<String, Object>
+                    Log.i("Base de datos (close)", "Usuario en registro: ${usernameReg.get("username")}")
+                    if(usernameReg.get("username").toString()==userInSession){
+                        existe = true
+                        userKey = element.key as String
+                        password = usernameReg.get("password").toString()
+                        break
+                    }
+                }
+
+                if(existe){
+                    var usuarioUpdate = Usuario(userInSession, password, false).toMap()
+                    var update = mapOf(
+                        "/${userKey}" to usuarioUpdate
+                    )
+                    db.child("Usuarios").updateChildren(update)
+                }
+            }.addOnFailureListener{
+                Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
+            }
+        }
+        super.onDestroy()
     }
 
     /*fun usuarioExistente(username: String){

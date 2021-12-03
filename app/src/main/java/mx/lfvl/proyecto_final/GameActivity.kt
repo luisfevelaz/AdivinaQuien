@@ -20,6 +20,7 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
 
         val personaje = intent.getSerializableExtra("personaje") as Personaje
+        val username = intent.getStringExtra("username")
 
         recView = findViewById(R.id.recView)
         imgJugador = findViewById(R.id.imgJugador)
@@ -43,7 +44,6 @@ class GameActivity : AppCompatActivity() {
 
         btnSi.isEnabled = false
         btnNo.isEnabled = false
-
 
         val datos = arrayOf(
             Personaje(1,"Memo", R.drawable.c1),
@@ -91,9 +91,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         spPersonaje.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>) {
-
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
 
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -143,8 +141,6 @@ class GameActivity : AppCompatActivity() {
 
         recView.setHasFixedSize(true)
         recView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
-
-
         recView.adapter = adaptador;
     }
 }

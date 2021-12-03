@@ -50,15 +50,19 @@ class UsuarioSesion : AppCompatActivity() {
         val personaje = items[random-1]; // se almacena el personaje en una variable para enviarselo a una de las dos opciones de juego
 
         btnOnline.setOnClickListener {
+            val username = intent.getStringExtra("username")
             val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
+            intent.putExtra("username",username)
             startActivity(intent)
 
         }
 
         btnIndividual.setOnClickListener {
+            val username = intent.getStringExtra("username")
             val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
+            intent.putExtra("username",username)
             startActivity(intent)
         }
 
