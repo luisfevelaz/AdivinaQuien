@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.view.get
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -101,6 +102,14 @@ class GameActivity : AppCompatActivity() {
                 id: Long
             ) {
                 //asigna valores a la variable preguntaPersonaje
+                val pos = parent?.getItemAtPosition(position)
+                val preg: String =pos.toString()
+                preguntaPersonaje = preg
+                Toast.makeText(
+                    applicationContext,
+                    "Opcion: $preg",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -116,6 +125,14 @@ class GameActivity : AppCompatActivity() {
                 id: Long
             ) {
                 //asigna valores a la variable pregunta
+                val pos = parent?.getItemAtPosition(position)
+                val preg: String =pos.toString()
+                preguntaPersonaje = preg
+                Toast.makeText(
+                    applicationContext,
+                    "Opcion: $preg",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

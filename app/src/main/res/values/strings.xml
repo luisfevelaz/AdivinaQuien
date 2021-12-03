@@ -1,11 +1,48 @@
 <resources>
     <string name="app_name">proyecto_final</string>
     <string-array name="nombres_array">
+        <item>Memo</item>
+        <item>Laura</item>
         <item>Bryan</item>
+        <item>Pablo</item>
+        <item>Andrea</item>
+        <item>John</item>
+        <item>Omar</item>
+        <item>Ramon</item>
+        <item>Tony</item>
+        <item>Maria</item>
+        <item>Fernando</item>
+        <item>Alejandra</item>
+        <item>William</item>
+        <item>Luisa</item>
+        <item>Chuy</item>
+        <item>Roman</item>
+        <item>Ana</item>
+        <item>Edgar</item>
+        <item>Andres</item>
+        <item>Pedro</item>
         <item>Sofia</item>
+        <item>Manuel</item>
+        <item>Carlos</item>
+        <item>Jose</item>
     </string-array>
     <string-array name="preguntas_array">
         <item>¿Tu personaje es hombre?</item>
         <item>¿Tu personaje es mujer?</item>
+        <item>¿Tu personaje es de tez blanca clara?</item>
+        <item>¿Tu personaje es de tez blanca regular?</item>
+        <item>¿Tu personaje es de tez morena?</item>
+        <item>¿Tu personaje usa lentes?</item>
+        <item>¿Tu personaje usa mascara?</item>
+        <item>¿Tu personaje tiene cabello negro?</item>
+        <item>¿Tu personaje tiene cabello cafe?</item>
+        <item>¿Tu personaje tiene cabello rubio?</item>
+        <item>¿Tu personaje tiene cabello gris?</item>
+        <item>¿Tu personaje tiene cabello corto?</item>
+        <item>¿Tu personaje tiene cabello largo?</item>
+        <item>¿Tu personaje tiene cabello?</item>
+        <item>¿Tu personaje tiene bigote?</item>
+        <item>¿Tu personaje tiene barba?</item>
+
     </string-array>
 </resources>
