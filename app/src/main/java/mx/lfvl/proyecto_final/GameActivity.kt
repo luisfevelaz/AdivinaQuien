@@ -87,7 +87,7 @@ class GameActivity : AppCompatActivity() {
             btnNo.isEnabled = false
             btnSi.isEnabled = false
             btnSend.isEnabled = true
-            alertResultado("Ganaste");
+            //alertResultado("Ganaste");
         }
 
         btnSi.setOnClickListener {
@@ -154,6 +154,19 @@ class GameActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
                 .setTitle("Tu oponente pregunta: ")
                 .setMessage(pregunta)
+                .setPositiveButton("Sí"){
+                    dialog,int -> enviarRespuesta(true)
+                }
+                .setNegativeButton("No"){
+                    dialog,int-> enviarRespuesta(false)
+                }
+                .show()
+    }
+
+    fun alertRespuesta(resp: String){
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Tu oponente responde: ")
+                .setMessage(resp)
                 .setPositiveButton("Ok"){
                     dialog, int ->
                 }.show()
@@ -166,5 +179,8 @@ class GameActivity : AppCompatActivity() {
                 .setPositiveButton("Ok"){
                     dialog, int ->
                 }.show()
+    }
+    fun enviarRespuesta(resp: Boolean){
+        println("Respuesta: "+ resp)
     }
 }
