@@ -3,12 +3,20 @@ package mx.lfvl.proyecto_final
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_usuario_sesion.*
+import kotlin.random.Random
 
 class UsuarioSesion : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usuario_sesion)
+        val personajeImagen: ImageView = findViewById(R.id.personaje);
+        val btnOnline: Button = findViewById(R.id.btnOnline);
+        val btnIndividual: Button = findViewById(R.id.btnIndividual);
+
+
         val items = listOf<Personaje>(
             Personaje(1,"Memo", R.drawable.c1),
             Personaje(2,"Laura", R.drawable.c2),
@@ -35,13 +43,26 @@ class UsuarioSesion : AppCompatActivity() {
             Personaje(23,"Carlos", R.drawable.c23),
             Personaje(24,"Jose", R.drawable.c24),
         );
-        val adapter = CartasItemsSeleccion(this, items);
-        lista.adapter = adapter
 
-        lista.setOnItemClickListener{
-                parent, view, position, id ->
-            println("Selección: " + items[position].toString())
+        val random = Random(System.nanoTime()).nextInt(24 - 1 + 1) + 1;
+        personajeImagen.setImageResource(items[random-1].imagen); // se obtienen aleatoriamente el personaje
+
+        val personaje = items[random-1]; // se almacena el personaje en una variable para enviarselo a una de las dos opciones de juego
+
+        btnOnline.setOnClickListener {
+            val intent = Intent(this,GameActivity::class.java)
+            intent.putExtra("personaje",personaje)
+            startActivity(intent)
+
         }
+
+        btnIndividual.setOnClickListener {
+            val intent = Intent(this,GameActivity::class.java)
+            intent.putExtra("personaje",personaje)
+            startActivity(intent)
+        }
+
+
 
     }
 }
