@@ -10,9 +10,11 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_personaje.view.*
 
-class CartasItemsSeleccion(private val datos: Array<Personaje>,
+class CartasItemsSeleccion(private var datos: Array<Personaje>,private val arrayOriginal: Array<Personaje>,
                             private val clickListener : (Personaje) -> Unit):
     RecyclerView.Adapter<CartasItemsSeleccion.PersonajesViewHolder>(){
+
+
         class PersonajesViewHolder(val item: View): RecyclerView.ViewHolder(item){
             val img = item.findViewById(R.id.imagen) as ImageView
             fun bindPersonaje(personaje: Personaje){
@@ -32,8 +34,18 @@ class CartasItemsSeleccion(private val datos: Array<Personaje>,
         holder.bindPersonaje(personaje)
         holder.item.setOnClickListener {
             var personaje = datos[position]
-            personaje.imagen = R.drawable.atras1
+
+            if(datos[position].presionado){
+                datos[position].imagen = arrayOriginal[position].imagen;
+                personaje.imagen = arrayOriginal[position].imagen;
+                datos[position].presionado = false
+            }else{
+                datos[position].imagen = R.drawable.atras1
+                datos[position].presionado = true
+                personaje.imagen = R.drawable.atras1
+            }
             holder.bindPersonaje(personaje)
+
         }
     }
 

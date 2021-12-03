@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.stream.DoubleStream.builder
 
 class GameActivity : AppCompatActivity() {
     private lateinit var recView: RecyclerView
@@ -45,43 +47,46 @@ class GameActivity : AppCompatActivity() {
         btnNo.isEnabled = false
 
 
-        val datos = arrayOf(
-            Personaje(1,"Memo", R.drawable.c1),
-            Personaje(2,"Laura", R.drawable.c2),
-            Personaje(3,"Bryan", R.drawable.c3),
-            Personaje(4,"Pablo", R.drawable.c4),
-            Personaje(5,"Andrea", R.drawable.c5),
-            Personaje(6,"John", R.drawable.c6),
-            Personaje(7,"Omar", R.drawable.c7),
-            Personaje(8,"Ramon", R.drawable.c8),
-            Personaje(9,"Tony", R.drawable.c9),
-            Personaje(10,"Maria", R.drawable.c10),
-            Personaje(11,"Fernando", R.drawable.c11),
-            Personaje(12,"Alejandra", R.drawable.c12),
-            Personaje(13,"William", R.drawable.c13),
-            Personaje(14,"Luisa", R.drawable.c14),
-            Personaje(15,"Chuy", R.drawable.c15),
-            Personaje(16,"Roman", R.drawable.c16),
-            Personaje(17,"Ana", R.drawable.c17),
-            Personaje(18,"Edgar", R.drawable.c18),
-            Personaje(19,"Andres", R.drawable.c19),
-            Personaje(20,"Pedro", R.drawable.c20),
-            Personaje(21,"Sofia", R.drawable.c21),
-            Personaje(22,"Manuel", R.drawable.c22),
-            Personaje(23,"Carlos", R.drawable.c23),
-            Personaje(24,"Jose", R.drawable.c24),
+        var datos = arrayOf(
+            Personaje(1,"Memo", R.drawable.c1, false),
+            Personaje(2,"Laura", R.drawable.c2, false),
+            Personaje(3,"Bryan", R.drawable.c3, false),
+            Personaje(4,"Pablo", R.drawable.c4, false),
+            Personaje(5,"Andrea", R.drawable.c5, false),
+            Personaje(6,"John", R.drawable.c6,false),
+            Personaje(7,"Omar", R.drawable.c7, false),
+            Personaje(8,"Ramon", R.drawable.c8, false),
+            Personaje(9,"Tony", R.drawable.c9, false),
+            Personaje(10,"Maria", R.drawable.c10, false),
+            Personaje(11,"Fernando", R.drawable.c11, false),
+            Personaje(12,"Alejandra", R.drawable.c12, false),
+            Personaje(13,"William", R.drawable.c13, false),
+            Personaje(14,"Luisa", R.drawable.c14, false),
+            Personaje(15,"Chuy", R.drawable.c15, false),
+            Personaje(16,"Roman", R.drawable.c16, false),
+            Personaje(17,"Ana", R.drawable.c17, false),
+            Personaje(18,"Edgar", R.drawable.c18, false),
+            Personaje(19,"Andres", R.drawable.c19, false),
+            Personaje(20,"Pedro", R.drawable.c20, false),
+            Personaje(21,"Sofia", R.drawable.c21, false),
+            Personaje(22,"Manuel", R.drawable.c22, false),
+            Personaje(23,"Carlos", R.drawable.c23, false),
+            Personaje(24,"Jose", R.drawable.c24, false),
         )
+        datos.shuffle(); // esta función ordena aleatoriamente los elementos del arreglo.
 
         btnSend.setOnClickListener {
             btnNo.isEnabled = true
             btnSi.isEnabled = true
             btnSend.isEnabled = false
+            alertPregunta("¿Tu personaje es mujer?");
         }
 
         btnNo.setOnClickListener {
             btnNo.isEnabled = false
             btnSi.isEnabled = false
             btnSend.isEnabled = true
+            alertResultado("Ganaste");
         }
 
         btnSi.setOnClickListener {
@@ -137,7 +142,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         //val adaptador = CartasItemsSeleccion(datos)
-        val adaptador = CartasItemsSeleccion(datos){
+        val adaptador = CartasItemsSeleccion(datos,datos){
             Toast.makeText(this,"Pulsando a: ${it.nombre} ",Toast.LENGTH_SHORT).show()
         }
 
@@ -146,5 +151,23 @@ class GameActivity : AppCompatActivity() {
 
 
         recView.adapter = adaptador;
+    }
+
+    fun alertPregunta(pregunta: String){
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Tu oponente pregunta: ")
+                .setMessage(pregunta)
+                .setPositiveButton("Ok"){
+                    dialog, int ->
+                }.show()
+    }
+
+    fun alertResultado(resultado: String){
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Resultado del juego: ")
+                .setMessage(resultado)
+                .setPositiveButton("Ok"){
+                    dialog, int ->
+                }.show()
     }
 }
