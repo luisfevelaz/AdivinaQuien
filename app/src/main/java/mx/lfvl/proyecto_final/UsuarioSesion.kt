@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_usuario_sesion.*
 import kotlin.random.Random
 
@@ -51,11 +52,21 @@ class UsuarioSesion : AppCompatActivity() {
 
         btnOnline.setOnClickListener {
             val username = intent.getStringExtra("username")
+
+            /*val dialog = AlertDialog.Builder(this)
+                .setTitle("Juego online")
+                .setMessage("Estamos buscando a tu oponente")
+                .setNegativeButton("No"){
+                    dialog, int ->
+
+                }
+                .setCancelable(false)
+                .show()*/
+
             val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
             intent.putExtra("username",username)
             startActivity(intent)
-
         }
 
         btnIndividual.setOnClickListener {
@@ -65,8 +76,5 @@ class UsuarioSesion : AppCompatActivity() {
             intent.putExtra("username",username)
             startActivity(intent)
         }
-
-
-
     }
 }

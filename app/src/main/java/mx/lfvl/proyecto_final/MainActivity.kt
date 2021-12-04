@@ -137,7 +137,9 @@ class MainActivity : AppCompatActivity() {
                     }.addOnFailureListener{
                         Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
                     }
-            }.show()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onDestroy() {

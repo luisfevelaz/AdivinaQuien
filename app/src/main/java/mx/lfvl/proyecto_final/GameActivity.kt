@@ -160,6 +160,7 @@ class GameActivity : AppCompatActivity() {
                 .setNegativeButton("No"){
                     dialog,int-> enviarRespuesta(false)
                 }
+                .setCancelable(false)
                 .show()
     }
 
@@ -178,7 +179,9 @@ class GameActivity : AppCompatActivity() {
                 .setMessage(resultado)
                 .setPositiveButton("Ok"){
                     dialog, int ->
-                }.show()
+                }
+                .setCancelable(false)
+                .show()
     }
     fun enviarRespuesta(resp: Boolean){
         println("Respuesta: "+ resp)
