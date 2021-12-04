@@ -15,6 +15,7 @@ class GameActivity1 : AppCompatActivity() {
     private var pregunta: Int = 0;
     private var tipoPregunta: Int = 0;
     private lateinit var preguntaPersonaje: String
+    private lateinit var nombreUser: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -25,6 +26,8 @@ class GameActivity1 : AppCompatActivity() {
         recView = findViewById(R.id.recView)
         imgJugador = findViewById(R.id.imgJugador)
         imgJugador.setImageResource(personaje.imagen)
+        nombreUser = findViewById(R.id.nombreUser)
+        nombreUser.text = "Usuario: " + username;
 
         val btnSend: Button = findViewById(R.id.btnSend)
         val btnSi: Button = findViewById(R.id.btnSi)

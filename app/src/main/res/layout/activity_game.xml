@@ -19,7 +19,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent" />
 
         </LinearLayout>
         <TextView
@@ -51,7 +51,6 @@
                     android:layout_marginLeft="20dp"
                     tools:srcCompat="@tools:sample/avatars" />
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -117,4 +116,10 @@
                     android:layout_marginLeft="30dp"
                     android:text="No" />
         </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nombreUser"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="100dp"/>
 </LinearLayout>
