@@ -75,9 +75,9 @@ class UsuarioSesion : AppCompatActivity() {
         );
 
         val random = Random(System.nanoTime()).nextInt(24 - 1 + 1) + 1;
-        personajeImagen.setImageResource(items[random-1].imagen); // se obtienen aleatoriamente el personaje
+        personajeImagen.setImageResource(items[random-1].imagen); // se obtiene aleatoriamente el personaje
 
-        val personaje = items[random-1]; // se almacena el personaje en una variable para enviarselo a una de las dos opciones de juego
+        val personaje = items[random-1]; // se almacena el personaje en una variable para enviárselo a una de las dos opciones de juego
 
         btnOnline.setOnClickListener {
             val username = intent.getStringExtra("username")
@@ -94,96 +94,107 @@ class UsuarioSesion : AppCompatActivity() {
                 val runnable = object : Runnable {
                     override fun run() {
                         Log.i("Handler", "Ejecutado nuevamente")
-
-                        if(partidaHost == "" && loader.loaderActive()) {
-                            db.child("Partidas").get().addOnSuccessListener {
-                                for (element: DataSnapshot in it.getChildren()) {
-                                    var partidaReg = element.value as HashMap<String, Object>
-                                    Log.i("Base de datos", "Partida en registro: ${partidaReg.get("status")}")
-                                    if (partidaReg.get("status").toString() == "waiting") {
-                                        partidaExistente = true
-                                        partidaInSession = element.key as String
-                                        oponent = partidaReg.get("player1").toString()
-                                        break
+                        if(loader.loaderActive()){
+                            if(partidaHost == "" && loader.loaderActive()) {
+                                db.child("Partidas").get().addOnSuccessListener {
+                                    for (element: DataSnapshot in it.getChildren()) {
+                                        var partidaReg = element.value as HashMap<String, Object>
+                                        Log.i("Base de datos", "Partida en registro: ${partidaReg.get("status")}")
+                                        if (partidaReg.get("status").toString() == "waiting") {
+                                            partidaExistente = true
+                                            partidaInSession = element.key as String
+                                            oponent = partidaReg.get("player1").toString()
+                                            break
+                                        }
                                     }
-                                }
 
-                                if (partidaExistente) {
-                                    //Colocar al usuario actual como el Player2
-                                    var partidaUpdate = Partida("full",
-                                        oponent,
-                                        username,
-                                        "",
-                                        "",
-                                        "player1").toMap()
-                                    var update = mapOf(
-                                        "/${partidaInSession}" to partidaUpdate
-                                    )
-                                    db.child("Partidas").updateChildren(update)
-                                    loader.dismissLoader()
+                                    if (partidaExistente) {
+                                        //Colocamos al usuario actual como el Player2 pues él está entrando
+                                        var partidaUpdate = Partida("full",
+                                            oponent,
+                                            username,
+                                            "",
+                                            "",
+                                            "player1").toMap()
+                                        var update = mapOf(
+                                            "/${partidaInSession}" to partidaUpdate
+                                        )
+                                        db.child("Partidas").updateChildren(update)
+                                        loader.dismissLoader()
 
-                                    intent.putExtra("partidaInSession",partidaInSession)
-                                    intent.putExtra("type", "player2")
-                                    startActivity(intent)
-                                }
-                            }.addOnFailureListener {
-                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
-                            }
-                        }
-
-                        if(!partidaExistente && partidaHost==""){
-                            //CHECAMOS CUANDO POR FIN EL CAMPO status SEA full
-                            db.child("Partidas").get().addOnSuccessListener {
-                                var partida = Partida("waiting",
-                                    username,
-                                    "",
-                                    "",
-                                    "",
-                                    "player1").toMap()
-                                partidaHost = db.child("Partidas").push().key as String
-                                var update = mapOf(
-                                    "/${partidaHost}" to partida
-                                )
-                                db.child("Partidas").updateChildren(update)
-                            }.addOnFailureListener{
-                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
-                            }
-                        }
-
-                        if(!partidaExistente && partidaHost != "" && loader.loaderActive()){
-                            db.child("Partidas").get().addOnSuccessListener {
-                                var partidaComplete = false
-                                for (element: DataSnapshot in it.getChildren()) {
-                                    var partidaReg = element.value as HashMap<String, Object>
-                                    if (partidaReg.get("status").toString() == "full" && partidaReg.get("player1").toString()==username) {
-                                        Log.i("Base de datos", "Número de jugadores completo")
-                                        partidaComplete = true
-                                        break
+                                        intent.putExtra("partidaInSession",partidaInSession)
+                                        intent.putExtra("type", "player2")
+                                        intent.putExtra("oponent", oponent)
+                                        startActivity(intent)
                                     }
+                                }.addOnFailureListener {
+                                    Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
                                 }
-
-                                if (partidaComplete) {
-                                    loader.dismissLoader()
-                                    intent.putExtra("partidaInSession",partidaHost)
-                                    intent.putExtra("type", "player1")
-                                    startActivity(intent)
-                                }
-                            }.addOnFailureListener {
-                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
                             }
-                        }
 
-                        if(loader.loaderActive())
-                            postDelayed(this, 3000)
+                            if(!partidaExistente && partidaHost==""){
+                                db.child("Partidas").get().addOnSuccessListener {
+                                    for (element: DataSnapshot in it.getChildren()) {
+                                        var partidaReg = element.value as HashMap<String, Object>
+                                        Log.i("Base de datos", "Partida en registro: ${partidaReg.get("status")}")
+                                        if (partidaReg.get("status").toString() == "full") {
+                                            if(partidaReg.get("player1").toString()==username || partidaReg.get("player2").toString()==username){
+                                                partidaExistente = true
+                                                break
+                                            }
+                                        }
+                                    }
+
+                                    if(!partidaExistente){
+                                        var partida = Partida("waiting",
+                                            username,
+                                            "",
+                                            "",
+                                            "",
+                                            "player1").toMap()
+                                        partidaHost = db.child("Partidas").push().key as String
+                                        var update = mapOf(
+                                            "/${partidaHost}" to partida
+                                        )
+                                        db.child("Partidas").updateChildren(update)
+                                    }
+                                }.addOnFailureListener{
+                                    Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                                }
+                            }
+
+                            if(!partidaExistente && partidaHost != "" && loader.loaderActive()){
+                                //Si la partida ya tiene a ambos jugadores la iniciamos
+                                db.child("Partidas").get().addOnSuccessListener {
+                                    var partidaComplete = false
+                                    for (element: DataSnapshot in it.getChildren()) {
+                                        var partidaReg = element.value as HashMap<String, Object>
+                                        if (partidaReg.get("status").toString() == "full" && partidaReg.get("player1").toString()==username) {
+                                            Log.i("Base de datos", "Número de jugadores completo")
+                                            oponent = partidaReg.get("player2").toString()
+                                            partidaComplete = true
+                                            break
+                                        }
+                                    }
+
+                                    if (partidaComplete) {
+                                        loader.dismissLoader()
+                                        intent.putExtra("partidaInSession",partidaHost)
+                                        intent.putExtra("type", "player1")
+                                        intent.putExtra("oponent", oponent)
+                                        startActivity(intent)
+                                    }
+                                }.addOnFailureListener {
+                                    Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                                }
+                            }
+
+                            postDelayed(this, 5000)
+                        }
                     }
                 }
                 postDelayed(runnable, 1000)
             }
-
-            /*val intent = Intent(this,GameActivity::class.java)
-            intent.putExtra("personaje",personaje)
-            intent.putExtra("username",username)
-            startActivity(intent)*/
         }
 
         btnIndividual.setOnClickListener {

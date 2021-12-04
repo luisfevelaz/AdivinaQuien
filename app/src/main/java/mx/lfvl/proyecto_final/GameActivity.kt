@@ -2,28 +2,47 @@ package mx.lfvl.proyecto_final
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.get
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.util.stream.DoubleStream.builder
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import mx.lfvl.proyecto_final.Partida
 
 class GameActivity : AppCompatActivity() {
+    private lateinit var db: DatabaseReference
     private lateinit var recView: RecyclerView
     private lateinit var imgJugador: ImageView
+    private lateinit var  btnSend: Button
+    private lateinit var  btnSi: Button
+    private lateinit var  btnNo: Button
     private lateinit var pregunta: String
     private lateinit var preguntaPersonaje: String
+    private var username: String = ""
+    private var oponent: String = ""
+    private var partidaInSession: String = ""
+    private var type: String = ""  //player1 o player2 dependiendo de la conexión
+    private var turn: String = "player1"
+    private var turnType: String = "ask"
     private lateinit var nombreUser: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        db = Firebase.database.reference
 
         val personaje = intent.getSerializableExtra("personaje") as Personaje
-        val username = intent.getStringExtra("username")
+        username = intent.getStringExtra("username") as String
+        oponent = intent.getStringExtra("oponent") as String
+        partidaInSession = intent.getStringExtra("partidaInSession") as String
+        type = intent.getStringExtra("type") as String
 
         recView = findViewById(R.id.recView)
         imgJugador = findViewById(R.id.imgJugador)
@@ -31,9 +50,9 @@ class GameActivity : AppCompatActivity() {
         nombreUser = findViewById(R.id.nombreUser)
         nombreUser.text = "Usuario: " + username;
 
-        val btnSend: Button = findViewById(R.id.btnSend)
-        val btnSi: Button = findViewById(R.id.btnSi)
-        val btnNo: Button = findViewById(R.id.btnNo)
+        btnSend = findViewById(R.id.btnSend)
+        btnSi = findViewById(R.id.btnSi)
+        btnNo = findViewById(R.id.btnNo)
 
         val spPreguntas: Spinner = findViewById(R.id.spPreg)
         val spPersonaje: Spinner = findViewById(R.id.spPersonaje)
@@ -47,9 +66,15 @@ class GameActivity : AppCompatActivity() {
         adaptadorPersonaje.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spPersonaje.adapter = adaptadorPersonaje
 
-        btnSi.isEnabled = false
-        btnNo.isEnabled = false
-
+        if(type==turn){
+            deshabilitar()
+            habilitarPregunta()
+        }
+        else{
+            deshabilitar()
+            turnType = "answer"
+            esperarTurno(turnType)
+        }
 
         var datos = arrayOf(
             Personaje(1,"Memo", R.drawable.c1, false),
@@ -80,23 +105,23 @@ class GameActivity : AppCompatActivity() {
         datos.shuffle(); // esta función ordena aleatoriamente los elementos del arreglo.
 
         btnSend.setOnClickListener {
-            btnNo.isEnabled = true
-            btnSi.isEnabled = true
-            btnSend.isEnabled = false
-            alertPregunta("¿Tu personaje es mujer?");
+            if(preguntaPersonaje != ""){
+                deshabilitar()
+                turnType = "ask"
+                enviarPregunta(preguntaPersonaje)
+            }
         }
 
         btnNo.setOnClickListener {
-            btnNo.isEnabled = false
-            btnSi.isEnabled = false
-            btnSend.isEnabled = true
-            //alertResultado("Ganaste");
+            deshabilitar()
+            turnType = "answer"
+            enviarRespuesta(false)
         }
 
         btnSi.setOnClickListener {
-            btnNo.isEnabled = false
-            btnSi.isEnabled = false
-            btnSend.isEnabled = true
+            deshabilitar()
+            turnType = "answer"
+            enviarRespuesta(true)
         }
 
         spPersonaje.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
@@ -110,11 +135,11 @@ class GameActivity : AppCompatActivity() {
             ) {
                 //asigna valores a la variable preguntaPersonaje
                 val pos = parent?.getItemAtPosition(position)
-                val preg: String =pos.toString()
+                val preg: String = pos.toString()
                 preguntaPersonaje = preg
                 Toast.makeText(
                     applicationContext,
-                    "Opcion: $preg",
+                    "Opción: $preg",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -133,11 +158,11 @@ class GameActivity : AppCompatActivity() {
             ) {
                 //asigna valores a la variable pregunta
                 val pos = parent?.getItemAtPosition(position)
-                val preg: String =pos.toString()
+                val preg: String = pos.toString()
                 preguntaPersonaje = preg
                 Toast.makeText(
                     applicationContext,
-                    "Opcion: $preg",
+                    "Opción: $preg",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -157,36 +182,179 @@ class GameActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
                 .setTitle("Tu oponente pregunta: ")
                 .setMessage(pregunta)
-                .setPositiveButton("Sí"){
-                    dialog,int -> enviarRespuesta(true)
-                }
-                .setNegativeButton("No"){
-                    dialog,int-> enviarRespuesta(false)
+                .setPositiveButton("Ok"){
+                    dialog,int ->
+                        habilitarRespuesta()
                 }
                 .setCancelable(false)
                 .show()
     }
 
-    fun alertRespuesta(resp: String){
+    fun alertRespuesta(resp: Boolean){
+        var msg = "Sí"
+        if(resp == false){
+            msg = "No";
+        }
+
         val dialog = AlertDialog.Builder(this)
-                .setTitle("Tu oponente responde: ")
-                .setMessage(resp)
-                .setPositiveButton("Ok"){
-                    dialog, int ->
-                }.show()
+            .setTitle("Tu oponente responde: ")
+            .setMessage(msg)
+            .setPositiveButton("Ok"){
+                dialog, int ->
+                    //CHECAR SI ERA LA PREGUNTA DE PERSONAJE Y SI ES UN SÍ O UN NO
+
+                    //SI NO ES LA PREGUNTA DE PERSONAJE
+                    habilitarPregunta()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     fun alertResultado(resultado: String){
         val dialog = AlertDialog.Builder(this)
-                .setTitle("Resultado del juego: ")
-                .setMessage(resultado)
-                .setPositiveButton("Ok"){
-                    dialog, int ->
-                }
-                .setCancelable(false)
-                .show()
+            .setTitle("Resultado del juego: ")
+            .setMessage(resultado)
+            .setPositiveButton("Ok"){
+                dialog, int ->
+                    //VER SI SE PUEDE SALIR DE LA ACTIVIDAD
+                    //REGISTRAR RESULTADO EN PERDIDAS JUGADAS GANADAS DEL USUARIO
+            }
+            .setCancelable(false)
+            .show()
     }
+
+    fun enviarPregunta(pregunta: String){
+        var newTurn = "player2"
+        var player1 = username
+        var player2 = oponent
+        if(type!="player1"){
+            newTurn = "player1"
+            player1 = oponent
+            player2 = username
+        }
+
+        /*Handler().apply {
+            val runnable = object : Runnable {
+                override fun run() {*/
+        var partidaUpdate = Partida("full",
+            player1,
+            player2,
+            pregunta,
+            "",
+            newTurn).toMap()
+        var update = mapOf(
+            "/${partidaInSession}" to partidaUpdate
+        )
+        db.child("Partidas").updateChildren(update)
+
+        /*            if(!received)
+                        postDelayed(this, 7000)
+                }
+            }
+            postDelayed(runnable, 500)
+        }*/
+        //println("Respuesta: "+ resp)
+        esperarTurno(turnType)
+    }
+
     fun enviarRespuesta(resp: Boolean){
+        //var received = false;
+        var newTurn = "player2"
+        var player1 = username
+        var player2 = oponent
+        if(type!="player1"){
+            newTurn = "player1"
+            player1 = oponent
+            player2 = username
+        }
+        var msg = "Sí"
+        if(resp == false)
+            msg = "No";
+
+        /*Handler().apply {
+            val runnable = object : Runnable {
+                override fun run() {*/
+                    var partidaUpdate = Partida("full",
+                        player1,
+                        player2,
+                        "",
+                        msg,
+                        newTurn).toMap()
+                    var update = mapOf(
+                        "/${partidaInSession}" to partidaUpdate
+                    )
+                    db.child("Partidas").updateChildren(update)
+
+        /*            if(!received)
+                        postDelayed(this, 7000)
+                }
+            }
+            postDelayed(runnable, 500)
+        }*/
         println("Respuesta: "+ resp)
+        esperarTurno(turnType)
+    }
+
+    fun esperarTurno(tipo: String){
+        var received = false
+        var text = ""
+        Handler().apply {
+            val runnable = object : Runnable {
+                override fun run() {
+                    if(!received) {
+                        var msj = ""
+                        var res = ""
+                        db.child("Partidas").get().addOnSuccessListener {
+                            for (element: DataSnapshot in it.getChildren()) {
+                                var partidaReg = element.value as HashMap<String, Object>
+                                Log.i("Turno",partidaReg.get("turn").toString())
+                                if (partidaReg.get("turn").toString() == type) {
+                                    received = true
+                                    msj = partidaReg.get("message").toString()
+                                    res = partidaReg.get("response").toString()
+                                }
+                            }
+
+                            if (received) {
+                                text = msj
+                                if (tipo == "ask")
+                                    text = res
+                            }
+                        }.addOnFailureListener {
+                            Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                        }
+
+                        postDelayed(this, 3000)
+                    }
+                    else{
+                        if(tipo=="ask"){
+                            if(text=="Sí")
+                                alertRespuesta(true)
+                            else
+                                alertRespuesta(false)
+                        }
+                        else{
+                            alertPregunta(text);
+                        }
+                    }
+                }
+            }
+            postDelayed(runnable, 500)
+        }
+    }
+
+    fun habilitarPregunta(){
+        btnSend.isEnabled = true
+    }
+
+    fun habilitarRespuesta(){
+        btnNo.isEnabled = true
+        btnSi.isEnabled = true
+    }
+
+    fun deshabilitar(){
+        btnNo.isEnabled = false
+        btnSi.isEnabled = false
+        btnSend.isEnabled = false
     }
 }
