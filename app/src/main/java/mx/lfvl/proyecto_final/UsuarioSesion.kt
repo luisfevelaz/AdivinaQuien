@@ -1,12 +1,14 @@
 package mx.lfvl.proyecto_final
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
-import kotlinx.android.synthetic.main.activity_usuario_sesion.*
+import dmax.dialog.SpotsDialog
 import kotlin.random.Random
 
 class UsuarioSesion : AppCompatActivity() {
@@ -16,7 +18,6 @@ class UsuarioSesion : AppCompatActivity() {
         val personajeImagen: ImageView = findViewById(R.id.personaje);
         val btnOnline: Button = findViewById(R.id.btnOnline);
         val btnIndividual: Button = findViewById(R.id.btnIndividual);
-
 
         val items = listOf<Personaje>(
             Personaje(1,"Memo", R.drawable.c1,false),
@@ -63,10 +64,41 @@ class UsuarioSesion : AppCompatActivity() {
                 .setCancelable(false)
                 .show()*/
 
-            val intent = Intent(this,GameActivity::class.java)
+            /*val dialog: AlertDialog = SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Estamos buscando a tu oponente")
+                /*.setCancelListener(DialogInterface.OnCancelListener {
+                    Handler().apply {
+                        val runnable = object : Runnable {
+                            override fun run() {
+                                Log.i("Handler", "Ejecutado nuevamente")
+                                postDelayed(this, 3000)
+                            }
+                        }
+                        //postDelayed(runnable, delayMs)
+                    }
+                    /*val handler: Handler
+                    handler.postDelayed(it.dismiss(), 3000)*/
+                })*/
+                .setCancelable(false)
+                .build()
+
+            Handler().apply {
+                val runnable = object : Runnable {
+                    override fun run() {
+                        dialog.show()
+                        Log.i("Handler", "Ejecutado nuevamente")
+                        dialog.dismiss()
+                        postDelayed(this, 3000)
+                    }
+                }
+                //postDelayed(runnable, delayMs)
+            }*/
+
+            /*val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
             intent.putExtra("username",username)
-            startActivity(intent)
+            startActivity(intent)*/
         }
 
         btnIndividual.setOnClickListener {
