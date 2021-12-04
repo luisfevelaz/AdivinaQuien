@@ -31,6 +31,7 @@ class GameActivity : AppCompatActivity() {
     private var type: String = ""  //player1 o player2 dependiendo de la conexión
     private var turn: String = "player1"
     private var turnType: String = "ask"
+    private var preguntaFinal: Boolean = false
     private lateinit var nombreUser: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,6 +137,7 @@ class GameActivity : AppCompatActivity() {
                 //asigna valores a la variable preguntaPersonaje
                 val pos = parent?.getItemAtPosition(position)
                 val preg: String = pos.toString()
+                preguntaFinal = true
                 preguntaPersonaje = preg
                 Toast.makeText(
                     applicationContext,
@@ -159,6 +161,7 @@ class GameActivity : AppCompatActivity() {
                 //asigna valores a la variable pregunta
                 val pos = parent?.getItemAtPosition(position)
                 val preg: String = pos.toString()
+                preguntaFinal = false
                 preguntaPersonaje = preg
                 Toast.makeText(
                     applicationContext,
@@ -202,9 +205,19 @@ class GameActivity : AppCompatActivity() {
             .setPositiveButton("Ok"){
                 dialog, int ->
                     //CHECAR SI ERA LA PREGUNTA DE PERSONAJE Y SI ES UN SÍ O UN NO
+                    if(preguntaFinal){
+                        if(msg=="Sí"){
+                            alertResultado("Felicidades, ganaste!!!");
+                        }
+                        else{
+                            alertResultado("¡Ups perdiste!");
+                        }
+                    }
+                    else{
+                        //Si no es la pregunta final entonces habilitamos más preguntas
+                        habilitarPregunta()
+                    }
 
-                    //SI NO ES LA PREGUNTA DE PERSONAJE
-                    habilitarPregunta()
             }
             .setCancelable(false)
             .show()
@@ -233,9 +246,6 @@ class GameActivity : AppCompatActivity() {
             player2 = username
         }
 
-        /*Handler().apply {
-            val runnable = object : Runnable {
-                override fun run() {*/
         var partidaUpdate = Partida("full",
             player1,
             player2,
@@ -246,14 +256,6 @@ class GameActivity : AppCompatActivity() {
             "/${partidaInSession}" to partidaUpdate
         )
         db.child("Partidas").updateChildren(update)
-
-        /*            if(!received)
-                        postDelayed(this, 7000)
-                }
-            }
-            postDelayed(runnable, 500)
-        }*/
-        //println("Respuesta: "+ resp)
         esperarTurno(turnType)
     }
 
@@ -308,7 +310,7 @@ class GameActivity : AppCompatActivity() {
                             for (element: DataSnapshot in it.getChildren()) {
                                 var partidaReg = element.value as HashMap<String, Object>
                                 Log.i("Turno",partidaReg.get("turn").toString())
-                                if (partidaReg.get("turn").toString() == type) {
+                                if(partidaReg.get("turn").toString() == type) {
                                     received = true
                                     msj = partidaReg.get("message").toString()
                                     res = partidaReg.get("response").toString()
@@ -317,7 +319,7 @@ class GameActivity : AppCompatActivity() {
 
                             if (received) {
                                 text = msj
-                                if (tipo == "ask")
+                                if(tipo == "ask")
                                     text = res
                             }
                         }.addOnFailureListener {
@@ -328,13 +330,15 @@ class GameActivity : AppCompatActivity() {
                     }
                     else{
                         if(tipo=="ask"){
-                            if(text=="Sí")
+                            if(text=="Sí") {
                                 alertRespuesta(true)
-                            else
+                            }
+                            else {
                                 alertRespuesta(false)
+                            }
                         }
                         else{
-                            alertPregunta(text);
+                            alertPregunta(text)
                         }
                     }
                 }
