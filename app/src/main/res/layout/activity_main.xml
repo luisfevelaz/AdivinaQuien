@@ -8,12 +8,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
-    <ImageView
-        android:layout_width="wrap_content"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/icono1"
-        android:gravity="center"/>
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:gravity="center"
+            android:src="@drawable/icono1" />
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +31,7 @@
             android:layout_width="97dp"
             android:layout_height="30dp"
             android:layout_marginStart="56dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:text="Usuario:"
             android:textSize="18sp"/>
         <EditText
@@ -31,7 +39,7 @@
             android:layout_width="180dp"
             android:layout_height="40dp"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:ems="10"
             android:inputType="textPersonName"
             android:textSize="14sp"/>
@@ -46,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="56dp"
-            android:layout_marginTop="76dp"
+            android:layout_marginTop="10dp"
             android:text="Contraseña:"
             android:textSize="18sp"/>
         <EditText
@@ -54,7 +62,7 @@
             android:layout_width="183dp"
             android:layout_height="40dp"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPassword"
             android:textSize="14sp"/>
@@ -68,7 +76,7 @@
             android:id="@+id/checkNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
             android:text="Nuevo usuario"
             android:layout_marginLeft="90dp"
@@ -78,14 +86,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center">
 
         <Button
             android:id="@+id/inicio"
             android:layout_width="149dp"
             android:layout_height="65dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginLeft="135dp"
+
             android:text="Iniciar Sesión" />
     </LinearLayout>
 </LinearLayout>
