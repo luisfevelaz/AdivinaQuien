@@ -28,8 +28,8 @@ class GameActivity : AppCompatActivity() {
         recView = findViewById(R.id.recView)
         imgJugador = findViewById(R.id.imgJugador)
         imgJugador.setImageResource(personaje.imagen)
-        nombreUser = findViewById(R.id.nombreUser)
-        nombreUser.text = "Usuario: " + username;
+        nombreUser = findViewById(R.id.resp)
+        nombreUser.text = nombreUser.text.toString()+username
 
         val btnSend: Button = findViewById(R.id.btnSend)
         val btnSi: Button = findViewById(R.id.btnSi)
