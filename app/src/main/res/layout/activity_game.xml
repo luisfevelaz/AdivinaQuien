@@ -83,11 +83,11 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/resp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Respuestas"
+            android:text="Respuestas de "
             android:textSize="18sp"
             android:layout_marginLeft="45dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -116,10 +116,4 @@
                     android:layout_marginLeft="30dp"
                     android:text="No" />
         </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/nombreUser"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="100dp"/>
 </LinearLayout>

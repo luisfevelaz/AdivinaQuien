@@ -44,6 +44,7 @@ class UsuarioSesion : AppCompatActivity() {
         setContentView(R.layout.activity_usuario_sesion)
         val personajeImagen: ImageView = findViewById(R.id.personaje);
         val btnOnline: Button = findViewById(R.id.btnOnline);
+        val btnRecords: Button = findViewById(R.id.btnRecords);
         val btnIndividual: Button = findViewById(R.id.btnIndividual);
         db = Firebase.database.reference
 
@@ -204,5 +205,37 @@ class UsuarioSesion : AppCompatActivity() {
             intent.putExtra("username",username)
             startActivity(intent)
         }
+        btnRecords.setOnClickListener{
+            //mostrarRecords("3","3","0")
+            val username = intent.getStringExtra("username")
+            db.child("Records").get().addOnSuccessListener{
+                var existe = false
+                var total = 0
+                var victorias = 0
+                var derrotas = 0
+                for(element: DataSnapshot in it.getChildren()){
+                    var usernameReg = element.value as HashMap<String, Object>
+                    Log.i("Base de datos", "Usuario en registro: ${usernameReg.get("username")}")
+                    if(usernameReg.get("username").toString()==username){
+                        existe = true
+                        total = usernameReg.get("total") as Int
+                        victorias = usernameReg.get("victorias") as Int
+                        derrotas = usernameReg.get("derrotas") as Int
+                    }
+                }
+                mostrarRecords(total,victorias,derrotas)
+            }.addOnFailureListener{
+                Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
+            }
+        }
+    }
+    fun mostrarRecords(partidas: Int, victorias: Int, derrotas: Int){
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Records ")
+            .setMessage("Total de partidas: "+partidas+", Victorias: "+victorias+", Derrotas: "+derrotas)
+            .setPositiveButton("Ok"){
+                    dialog, int ->
+            }.setCancelable(false)
+            .show()
     }
 }

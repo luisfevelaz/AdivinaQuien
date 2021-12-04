@@ -22,6 +22,16 @@ data class Usuario(val username: String? = null, val password: String? = null, v
         )
     }
 }
+data class Record(val username: String? = null, val total: Int?= null, val derrotas: Int?= null,val victorias: Int?=null ){
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "username" to username,
+            "total" to total,
+            "derrotas" to derrotas,
+            "victorias" to victorias
+        )
+    }
+}
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnInicio: Button
@@ -60,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                     if(!existe){
                         var usuario = Usuario(txtUser.text.toString(), txtPassword.text.toString(), false).toMap()
                         db.child("Usuarios").push().setValue(usuario)
+                       // db.child("Records").push().setValue(Record(txtUser.text.toString(),0,0,0).toMap())
                     }
                 }.addOnFailureListener{
                     Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
