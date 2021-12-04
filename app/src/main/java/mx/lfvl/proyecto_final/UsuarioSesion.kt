@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import dmax.dialog.SpotsDialog
+import java.lang.Exception
 import kotlin.random.Random
 
 class UsuarioSesion : AppCompatActivity() {
@@ -54,46 +55,19 @@ class UsuarioSesion : AppCompatActivity() {
         btnOnline.setOnClickListener {
             val username = intent.getStringExtra("username")
 
-            /*val dialog = AlertDialog.Builder(this)
-                .setTitle("Juego online")
-                .setMessage("Estamos buscando a tu oponente")
-                .setNegativeButton("No"){
-                    dialog, int ->
-
-                }
-                .setCancelable(false)
-                .show()*/
-
-            /*val dialog: AlertDialog = SpotsDialog.Builder()
-                .setContext(this)
-                .setMessage("Estamos buscando a tu oponente")
-                /*.setCancelListener(DialogInterface.OnCancelListener {
-                    Handler().apply {
-                        val runnable = object : Runnable {
-                            override fun run() {
-                                Log.i("Handler", "Ejecutado nuevamente")
-                                postDelayed(this, 3000)
-                            }
-                        }
-                        //postDelayed(runnable, delayMs)
-                    }
-                    /*val handler: Handler
-                    handler.postDelayed(it.dismiss(), 3000)*/
-                })*/
-                .setCancelable(false)
-                .build()
+            val loader = LoaderDialog(this)
+            loader.showLoader()
 
             Handler().apply {
                 val runnable = object : Runnable {
                     override fun run() {
-                        dialog.show()
                         Log.i("Handler", "Ejecutado nuevamente")
-                        dialog.dismiss()
-                        postDelayed(this, 3000)
+                        if(loader.loaderActive())
+                            postDelayed(this, 3000)
                     }
                 }
-                //postDelayed(runnable, delayMs)
-            }*/
+                postDelayed(runnable, 1000)
+            }
 
             /*val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
