@@ -60,7 +60,7 @@ class UsuarioSesion : AppCompatActivity() {
 
         btnIndividual.setOnClickListener {
             val username = intent.getStringExtra("username")
-            val intent = Intent(this,GameActivity::class.java)
+            val intent = Intent(this,GameActivity1::class.java)
             intent.putExtra("personaje",personaje)
             intent.putExtra("username",username)
             startActivity(intent)
