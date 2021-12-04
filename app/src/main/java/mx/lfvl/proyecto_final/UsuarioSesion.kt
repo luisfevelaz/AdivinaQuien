@@ -8,17 +8,44 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dmax.dialog.SpotsDialog
 import java.lang.Exception
 import kotlin.random.Random
 
+@IgnoreExtraProperties
+data class Partida(val status: String? = null, val player1: String? = null,
+                   val player2: String? = null, val message: String? = null,
+                   val response: String? = null, val turn: String? = null) {
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "status" to status,
+            "player1" to player1,
+            "player2" to player2,
+            "message" to message,
+            "response" to response,
+            "turn" to turn,
+        )
+    }
+}
+
 class UsuarioSesion : AppCompatActivity() {
+    private lateinit var db: DatabaseReference
+    private var partidaInSession: String = ""
+    private var oponent: String = ""
+    private var partidaHost: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usuario_sesion)
         val personajeImagen: ImageView = findViewById(R.id.personaje);
         val btnOnline: Button = findViewById(R.id.btnOnline);
         val btnIndividual: Button = findViewById(R.id.btnIndividual);
+        db = Firebase.database.reference
 
         val items = listOf<Personaje>(
             Personaje(1,"Memo", R.drawable.c1,false),
@@ -54,6 +81,11 @@ class UsuarioSesion : AppCompatActivity() {
 
         btnOnline.setOnClickListener {
             val username = intent.getStringExtra("username")
+            var partidaExistente = false
+
+            val intent = Intent(this,GameActivity::class.java)
+            intent.putExtra("personaje",personaje)
+            intent.putExtra("username",username)
 
             val loader = LoaderDialog(this)
             loader.showLoader()
@@ -62,6 +94,85 @@ class UsuarioSesion : AppCompatActivity() {
                 val runnable = object : Runnable {
                     override fun run() {
                         Log.i("Handler", "Ejecutado nuevamente")
+
+                        if(partidaHost == "" && loader.loaderActive()) {
+                            db.child("Partidas").get().addOnSuccessListener {
+                                for (element: DataSnapshot in it.getChildren()) {
+                                    var partidaReg = element.value as HashMap<String, Object>
+                                    Log.i("Base de datos", "Partida en registro: ${partidaReg.get("status")}")
+                                    if (partidaReg.get("status").toString() == "waiting") {
+                                        partidaExistente = true
+                                        partidaInSession = element.key as String
+                                        oponent = partidaReg.get("player1").toString()
+                                        break
+                                    }
+                                }
+
+                                if (partidaExistente) {
+                                    //Colocar al usuario actual como el Player2
+                                    var partidaUpdate = Partida("full",
+                                        oponent,
+                                        username,
+                                        "",
+                                        "",
+                                        "player1").toMap()
+                                    var update = mapOf(
+                                        "/${partidaInSession}" to partidaUpdate
+                                    )
+                                    db.child("Partidas").updateChildren(update)
+                                    loader.dismissLoader()
+
+                                    intent.putExtra("partidaInSession",partidaInSession)
+                                    intent.putExtra("type", "player2")
+                                    startActivity(intent)
+                                }
+                            }.addOnFailureListener {
+                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                            }
+                        }
+
+                        if(!partidaExistente && partidaHost==""){
+                            //CHECAMOS CUANDO POR FIN EL CAMPO status SEA full
+                            db.child("Partidas").get().addOnSuccessListener {
+                                var partida = Partida("waiting",
+                                    username,
+                                    "",
+                                    "",
+                                    "",
+                                    "player1").toMap()
+                                partidaHost = db.child("Partidas").push().key as String
+                                var update = mapOf(
+                                    "/${partidaHost}" to partida
+                                )
+                                db.child("Partidas").updateChildren(update)
+                            }.addOnFailureListener{
+                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                            }
+                        }
+
+                        if(!partidaExistente && partidaHost != "" && loader.loaderActive()){
+                            db.child("Partidas").get().addOnSuccessListener {
+                                var partidaComplete = false
+                                for (element: DataSnapshot in it.getChildren()) {
+                                    var partidaReg = element.value as HashMap<String, Object>
+                                    if (partidaReg.get("status").toString() == "full" && partidaReg.get("player1").toString()==username) {
+                                        Log.i("Base de datos", "Número de jugadores completo")
+                                        partidaComplete = true
+                                        break
+                                    }
+                                }
+
+                                if (partidaComplete) {
+                                    loader.dismissLoader()
+                                    intent.putExtra("partidaInSession",partidaHost)
+                                    intent.putExtra("type", "player1")
+                                    startActivity(intent)
+                                }
+                            }.addOnFailureListener {
+                                Log.e("Base de datos", "Error, no existe el objeto Partidas", it)
+                            }
+                        }
+
                         if(loader.loaderActive())
                             postDelayed(this, 3000)
                     }
