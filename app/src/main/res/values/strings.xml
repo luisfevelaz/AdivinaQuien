@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">proyecto_final</string>
+    <string name="app_name">Adivina adivinador</string>
     <string-array name="nombres_array">
         <item>Memo</item>
         <item>Laura</item>
