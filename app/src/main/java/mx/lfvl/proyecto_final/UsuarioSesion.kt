@@ -207,7 +207,7 @@ class UsuarioSesion : AppCompatActivity() {
         }
         btnRecords.setOnClickListener{
             //mostrarRecords("3","3","0")
-            val username = intent.getStringExtra("username")
+            /*val username = intent.getStringExtra("username")
             db.child("Records").get().addOnSuccessListener{
                 var existe = false
                 var total = 0
@@ -226,7 +226,7 @@ class UsuarioSesion : AppCompatActivity() {
                 mostrarRecords(total,victorias,derrotas)
             }.addOnFailureListener{
                 Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
-            }
+            }*/
         }
     }
     fun mostrarRecords(partidas: Int, victorias: Int, derrotas: Int){
