@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -90,9 +91,7 @@ class MainActivity : AppCompatActivity() {
                         //Variable para conocer el usuario en sesión
                         userInSession = username
 
-                        val intent = Intent(this,UsuarioSesion::class.java)
-                        intent.putExtra("username", username)
-                        startActivity(intent)
+                        alertLogIn(userInSession)
                     }
                 }.addOnFailureListener{
                     Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
@@ -100,6 +99,47 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    fun alertLogIn(username: String){
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Inicio de sesión exitoso")
+            .setMessage("Usuario ${username}")
+            .setPositiveButton("Ok"){
+                dialog, int ->
+                    val intent = Intent(this,UsuarioSesion::class.java)
+                    intent.putExtra("username", username)
+                    startActivity(intent)
+            }.setNegativeButton("Cancelar"){
+                dialog, int ->
+                    db.child("Usuarios").get().addOnSuccessListener {
+                        var existe = false
+                        var userKey = ""
+                        var password = ""
+                        for(element: DataSnapshot in it.getChildren()){
+                            var usernameReg = element.value as HashMap<String, Object>
+                            Log.i("Base de datos (close)", "Usuario en registro: ${usernameReg.get("username")}")
+                            if(usernameReg.get("username").toString()==userInSession){
+                                existe = true
+                                userKey = element.key as String
+                                password = usernameReg.get("password").toString()
+                                break
+                            }
+                        }
+
+                        if(existe){
+                            var usuarioUpdate = Usuario(userInSession, password, false).toMap()
+                            var update = mapOf(
+                                "/${userKey}" to usuarioUpdate
+                            )
+                            db.child("Usuarios").updateChildren(update)
+                        }
+                    }.addOnFailureListener{
+                        Log.e("Base de datos", "Error, no existe el objeto Usuarios", it)
+                    }
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onDestroy() {

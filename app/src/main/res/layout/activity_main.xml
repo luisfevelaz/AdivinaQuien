@@ -37,7 +37,7 @@
         <EditText
             android:id="@+id/txtUser"
             android:layout_width="180dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:layout_marginTop="20dp"
             android:ems="10"
@@ -60,7 +60,7 @@
         <EditText
             android:id="@+id/txtPassword"
             android:layout_width="183dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -93,7 +93,6 @@
             android:id="@+id/inicio"
             android:layout_width="149dp"
             android:layout_height="65dp"
-
             android:text="Iniciar Sesión" />
     </LinearLayout>
 </LinearLayout>

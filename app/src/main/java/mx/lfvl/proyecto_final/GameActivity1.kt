@@ -5,17 +5,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.get
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.util.stream.DoubleStream.builder
+import kotlin.random.Random
 
-class GameActivity : AppCompatActivity() {
+class GameActivity1 : AppCompatActivity() {
     private lateinit var recView: RecyclerView
     private lateinit var imgJugador: ImageView
-    private lateinit var pregunta: String
+    private var pregunta: Int = 0;
+    private var tipoPregunta: Int = 0;
     private lateinit var preguntaPersonaje: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +45,6 @@ class GameActivity : AppCompatActivity() {
         btnSi.isEnabled = false
         btnNo.isEnabled = false
 
-
         var datos = arrayOf(
             Personaje(1,"Memo", R.drawable.c1, false),
             Personaje(2,"Laura", R.drawable.c2, false),
@@ -71,30 +68,31 @@ class GameActivity : AppCompatActivity() {
             Personaje(20,"Pedro", R.drawable.c20, false),
             Personaje(21,"Sofia", R.drawable.c21, false),
             Personaje(22,"Manuel", R.drawable.c22, false),
+
             Personaje(23,"Carlos", R.drawable.c23, false),
             Personaje(24,"Jose", R.drawable.c24, false),
         )
         datos.shuffle(); // esta función ordena aleatoriamente los elementos del arreglo.
+        //Generar el personaje rival aleatoriamente
+        val random = Random(System.nanoTime()).nextInt(24 - 1 + 1) + 1;
+        val rival = datos[random-1];
 
         btnSend.setOnClickListener {
-            btnNo.isEnabled = true
-            btnSi.isEnabled = true
-            btnSend.isEnabled = false
-            alertPregunta("¿Tu personaje es mujer?");
+            if(tipoPregunta == 0){
+                revisarArray(pregunta,rival)
+            }else{
+                if(rival.nombre == preguntaPersonaje){
+                    alertResultado("Felicidades, ganaste!!!");
+                }else{
+                    alertResultado("Perdiste, el personaje era: " + rival.nombre);
+                }
+                btnSend.isEnabled = false;
+                //finish();
+            }
+
+            println("Rival es: " + rival.nombre)
         }
 
-        btnNo.setOnClickListener {
-            btnNo.isEnabled = false
-            btnSi.isEnabled = false
-            btnSend.isEnabled = true
-            //alertResultado("Ganaste");
-        }
-
-        btnSi.setOnClickListener {
-            btnNo.isEnabled = false
-            btnSi.isEnabled = false
-            btnSend.isEnabled = true
-        }
 
         spPersonaje.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -106,14 +104,11 @@ class GameActivity : AppCompatActivity() {
                 id: Long
             ) {
                 //asigna valores a la variable preguntaPersonaje
-                val pos = parent?.getItemAtPosition(position)
-                val preg: String =pos.toString()
-                preguntaPersonaje = preg
-                Toast.makeText(
-                    applicationContext,
-                    "Opcion: $preg",
-                    Toast.LENGTH_SHORT
-                ).show()
+                tipoPregunta = 1;
+                if (parent != null) {
+                    preguntaPersonaje = ""+parent.getItemAtPosition(position)
+                }
+
             }
         }
 
@@ -129,61 +124,68 @@ class GameActivity : AppCompatActivity() {
                 id: Long
             ) {
                 //asigna valores a la variable pregunta
-                val pos = parent?.getItemAtPosition(position)
-                val preg: String =pos.toString()
-                preguntaPersonaje = preg
-                Toast.makeText(
-                    applicationContext,
-                    "Opcion: $preg",
-                    Toast.LENGTH_SHORT
-                ).show()
+                pregunta = position;
+                tipoPregunta = 0;
             }
         }
 
-        //val adaptador = CartasItemsSeleccion(datos)
         val adaptador = CartasItemsSeleccion(datos,datos){
             Toast.makeText(this,"Pulsando a: ${it.nombre} ",Toast.LENGTH_SHORT).show()
         }
 
         recView.setHasFixedSize(true)
-        recView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
+        recView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         recView.adapter = adaptador;
-    }
-
-    fun alertPregunta(pregunta: String){
-        val dialog = AlertDialog.Builder(this)
-                .setTitle("Tu oponente pregunta: ")
-                .setMessage(pregunta)
-                .setPositiveButton("Sí"){
-                    dialog,int -> enviarRespuesta(true)
-                }
-                .setNegativeButton("No"){
-                    dialog,int-> enviarRespuesta(false)
-                }
-                .setCancelable(false)
-                .show()
-    }
-
-    fun alertRespuesta(resp: String){
-        val dialog = AlertDialog.Builder(this)
-                .setTitle("Tu oponente responde: ")
-                .setMessage(resp)
-                .setPositiveButton("Ok"){
-                    dialog, int ->
-                }.show()
     }
 
     fun alertResultado(resultado: String){
         val dialog = AlertDialog.Builder(this)
-                .setTitle("Resultado del juego: ")
-                .setMessage(resultado)
-                .setPositiveButton("Ok"){
+            .setTitle("Resultado del juego: ")
+            .setMessage(resultado)
+            .setPositiveButton("Ok"){
                     dialog, int ->
-                }
-                .setCancelable(false)
-                .show()
+            }.show()
     }
-    fun enviarRespuesta(resp: Boolean){
-        println("Respuesta: "+ resp)
+
+
+    fun revisarArray(pregunta: Int, rival: Personaje){
+        var respuesta = false;
+        when(pregunta){
+            0->respuesta = rival.id in ArraysCaracteristicos.ArrayHombre
+            1->respuesta = !(rival.id in ArraysCaracteristicos.ArrayHombre)
+            2->respuesta = rival.id in ArraysCaracteristicos.TezBlancaClara
+            3->respuesta = rival.id in ArraysCaracteristicos.TezBlanca
+            4->respuesta = rival.id in ArraysCaracteristicos.TezMorena
+            5->respuesta = rival.id in ArraysCaracteristicos.Lentes
+            6->respuesta = rival.id in ArraysCaracteristicos.Mascara
+            7->respuesta = rival.id in ArraysCaracteristicos.PeloNegro
+            8->respuesta = rival.id in ArraysCaracteristicos.PeloCafe
+            9->respuesta = rival.id in ArraysCaracteristicos.PeloRubio
+            10->respuesta = rival.id in ArraysCaracteristicos.PeloGris
+            11->respuesta = rival.id in ArraysCaracteristicos.PeloCorto
+            12->respuesta = rival.id in ArraysCaracteristicos.PeloLargo
+            13->respuesta = !(rival.id in ArraysCaracteristicos.Pelon)
+            14->respuesta = rival.id in ArraysCaracteristicos.Bigote
+            15->respuesta = rival.id in ArraysCaracteristicos.Barba
+        }
+
+        alertRespuesta(respuesta)
+
     }
+
+    fun alertRespuesta(resp: Boolean){
+        var msg = "Sí"
+        if(resp == false){
+            msg = "No";
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Tu oponente responde: ")
+            .setMessage(msg)
+            .setPositiveButton("Ok"){
+                    dialog, int ->
+            }.setCancelable(false)
+            .show()
+    }
+
 }

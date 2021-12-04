@@ -1,11 +1,15 @@
 package mx.lfvl.proyecto_final
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
-import kotlinx.android.synthetic.main.activity_usuario_sesion.*
+import dmax.dialog.SpotsDialog
+import java.lang.Exception
 import kotlin.random.Random
 
 class UsuarioSesion : AppCompatActivity() {
@@ -15,7 +19,6 @@ class UsuarioSesion : AppCompatActivity() {
         val personajeImagen: ImageView = findViewById(R.id.personaje);
         val btnOnline: Button = findViewById(R.id.btnOnline);
         val btnIndividual: Button = findViewById(R.id.btnIndividual);
-
 
         val items = listOf<Personaje>(
             Personaje(1,"Memo", R.drawable.c1,false),
@@ -51,22 +54,33 @@ class UsuarioSesion : AppCompatActivity() {
 
         btnOnline.setOnClickListener {
             val username = intent.getStringExtra("username")
-            val intent = Intent(this,GameActivity::class.java)
+
+            val loader = LoaderDialog(this)
+            loader.showLoader()
+
+            Handler().apply {
+                val runnable = object : Runnable {
+                    override fun run() {
+                        Log.i("Handler", "Ejecutado nuevamente")
+                        if(loader.loaderActive())
+                            postDelayed(this, 3000)
+                    }
+                }
+                postDelayed(runnable, 1000)
+            }
+
+            /*val intent = Intent(this,GameActivity::class.java)
             intent.putExtra("personaje",personaje)
             intent.putExtra("username",username)
-            startActivity(intent)
-
+            startActivity(intent)*/
         }
 
         btnIndividual.setOnClickListener {
             val username = intent.getStringExtra("username")
-            val intent = Intent(this,GameActivity::class.java)
+            val intent = Intent(this,GameActivity1::class.java)
             intent.putExtra("personaje",personaje)
             intent.putExtra("username",username)
             startActivity(intent)
         }
-
-
-
     }
 }
